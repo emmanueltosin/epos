@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>403 Forbidden</title>
+</head>
+<body>
+
+<p>Directory access is forbidden.</p>
+
+</body>
+</html>
+function hasAccess($page){
+$ci =& get_instance();
+$ret = false;
+$user = $ci->db->get_where("hotel_user_mapper",array(
+"user_id"=>$ci->session->userdata("hotel_userId"),
+"hotel_id"=>$ci->session->userdata("hotel_id")
+))->row_array();
+
+if(empty($user['permission'])){
+return false;
+}
+
+if($user['permission'] == "all"){
+return true;
+}
+
+$permission = unserialize($user['permission']);
+foreach($permission as $key=>$p){
+if($key == $page){
+$ret = true;
+break;
+}
+}
+
+return $ret;
+}
